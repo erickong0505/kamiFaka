@@ -53,16 +53,16 @@ app.config['SQLALCHEMY_DATABASE_URI'] =  'sqlite:///'+os.path.join(SQL_PATH,'kam
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://faka:xxxxx@154:3306/faka?charset=utf8mb4'   #远程
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://docker_db_1:root@127.0.0.1:3306/KAFAKA?charset=utf8mb4'   #本地
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://root:password@127.0.0.1:5432/KAFAKA'   #本地
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres+psycopg2://cmmpjjkinayyhk:2428996ef24132a272c88374071448af13aa3169ac551492e7046b264876080a@ec2-52-2-82-109.compute-1.amazonaws.com:5432/deail3ojvojiia'   #远程
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres+psycopg2://cent:17:e6:75:b1:21:32:fa:80:c9:bb:9b:21:e2:cc:52:88@174.138.18.77'   #远程
 # docker run --name postgres -e POSTGRES_PASSWORD=password -e POSTGRES_USER=root -e POSTGRES_DB=KAFAKA -p 5432:5432 -d postgres
 
 app.config['SQLALCHEMY_BINDS'] =  {'order':'sqlite:///'+os.path.join(SQL_PATH,'middle.db')}   #中间转移数据库
-# mysql mysql+pymysql://root:wujing0126@127.0.0.1:3306/gbs?charset=utf8
+# mysql mysql+pymysql://microstore_cyou:Eric0505@127.0.0.1:3306/gbs?charset=utf8
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # Setup the Flask-JWT-Extended extension. Read more: https://flask-jwt-extended.readthedocs.io/en/stable/options/
 # app.config['JWT_SECRET_KEY'] = ''.join(random.sample(string.ascii_letters + string.digits, 46))  # Change this!
-app.config['JWT_SECRET_KEY'] = 'EXZgC3BMhPxtu4Kq6W7mo9rAT0yYGsOiQNf5vUInSjRVeb'  # Change this!
-app.config['JWT_ACCESS_TOKEN_EXPIRES'] = datetime.timedelta(hours=1)
+app.config['JWT_SECRET_KEY'] = 'jjjnffaE3rjs2ucHQbZJEasW8EU3u3Y-CPoO5I2E6mA'  # Change this!
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = datetime.timedelta(hours=4)
 
 jwt = JWTManager(app)
 
