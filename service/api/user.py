@@ -32,7 +32,7 @@ def theme_list():
         cags = ProdCag.query.filter().order_by(ProdCag.sort).all()
     except Exception as e:
         log(e)
-        return '数据库异常', 503    
+        return 'Database Abnormal', 503    
     prod_list =[x.to_json() for x in prods]
     cag_list = [x.to_json()['name'] for x in cags]
     tmp_cags = []
@@ -62,7 +62,7 @@ def detail(shop_id):
         prod = ProdInfo.query.filter_by(id = shop_id).first_or_404('Product not exist')
     except Exception as e:
         log(e)
-        return '数据库异常', 503   
+        return 'Database Abnormal', 503   
     res = prod.detail_json()
     try:
         if len(res['price_wholesale']) >5:
@@ -100,12 +100,12 @@ def get_order():
     contact = request.json.get('contact',None)
     # contact = request.args.get('contact',None)
     if not contact:
-        return '参数丢失', 404
+        return 'Specification Error', 404
     try:
         orders = Order.query.filter_by(contact = contact).limit(2).all()
     except Exception as e:
         log(e)
-        return '数据库异常', 503   
+        return 'Database Abnormal', 503   
     if orders:
         order = orders[-1].check_card() # {}
         time_count = datetime.utcnow()+timedelta(hours=8)-datetime.strptime(order['updatetime'],'%Y-%m-%d %H:%M') 
@@ -127,29 +127,29 @@ def get_pay_url():  # 传递名称、支付方式、订单号，购买数量，�
     contact_txt = request.json.get('contact_txt',None)
     num = request.json.get('num',None)
     if payment not in ['支付宝当面付','虎皮椒微信','虎皮椒支付宝','码支付微信','码支付支付宝','码支付QQ','PAYJS支付宝','PAYJS微信','微信官方接口','易支付QQ','易支付微信','易支付支付宝','Mugglepay','YunGouOS','YunGouOS_WXPAY','V免签微信','V免签支付宝','QQ钱包','随便付','Stripe支付宝','Stripe微信','云免签微信','云免签支付宝','迅虎微信']:
-        return '暂无该支付接口', 404
+        return 'Unable to connect to API', 404
     if not all([name,out_order_id,contact,num]):
-        return '参数丢失', 404
+        return 'Specification Error', 404
     num = int(num) 
     if num < 1:
-        return '数量不正确', 404
+        return 'Wrong quantity input', 404
     if len(out_order_id) != 27:
-        return '不支持的订单号', 404
+        return 'Order number not supported', 404
     # 创建临时订单
     r = make_tmp_order(out_order_id,name,payment,contact,contact_txt,num)
     if r:
         return jsonify(r)
-    return '调用支付接口失败', 400
+    return 'Selected payment channel Unavailable', 400
 
 ## 本地检测--》尝试改为服务器检测，避免用户支付过程退出页面
-@base.route('/check_pay', methods=['post']) #检测状态或取消订单
+@base.route('/check_pay', methods=['post']) #Check Status or Cancel Order
 @limiter.limit("6/minute;40/hour;400/day", override_defaults=False)
 def check_pay():
     # print(request.json)
     out_order_id = request.json.get('out_order_id',None)
-    payment = request.json.get('payment',None) #支付方式
+    payment = request.json.get('payment',None) #Payment Method
     if not out_order_id or len(out_order_id) !=27:
-        return '参数丢失', 404
+        return 'Specification Error', 404
     # 订单校验
     if TempOrder.query.filter_by(out_order_id = out_order_id,status = True).first():
         return jsonify({'msg':'success'})
@@ -158,14 +158,14 @@ def check_pay():
     return jsonify({'msg':'not paid'})  #支付状态校验            
 
 ## 自动校验
-@base.route('/check_pay_auto', methods=['post']) #检测状态或取消订单
+@base.route('/check_pay_auto', methods=['post']) #Check Status or Cancel Order
 @limiter.limit("40/minute;600/hour;1000/day", override_defaults=False)
 def check_pay_auto():
     # print(request.json)
     out_order_id = request.json.get('out_order_id',None)
-    payment = request.json.get('payment',None) #支付方式
+    payment = request.json.get('payment',None) #Payment Method
     if not out_order_id or len(out_order_id) !=27:
-        return '参数丢失', 404
+        return 'Specification Error', 404
     # 订单校验
     if TempOrder.query.filter_by(out_order_id = out_order_id,status = True).first():
         return jsonify({'msg':'success'})
@@ -178,7 +178,7 @@ def check_pay_auto():
 def get_card():
     out_order_id = request.json.get('out_order_id',None)
     if not out_order_id:
-        return '参数丢失', 404
+        return 'Specification Error', 404
     try:
         card = Order.query.filter_by(out_order_id = out_order_id).first()
         if card:
@@ -186,9 +186,9 @@ def get_card():
     except Exception as e:
         log(e)
         # time.sleep()      
-        return '订单创建失败', 400        
+        return 'Order Creation Failed', 400        
    
-    return '订单丢失', 404
+    return 'Order Missing', 404
     
 
 @base.route('/get_system', methods=['get'])
@@ -202,5 +202,5 @@ def get_system():
         info['pays'] = [x.enable_json() for x in pays]  # ({'pays':['支付宝当面付','码支付微信','PAYJS支付宝'],'icons':['支付宝当面付','码支付微信','PAYJS支付宝']})
         return jsonify(info)
     except:
-        return '数据库异常', 503
+        return 'Database Abnormal', 503
     
