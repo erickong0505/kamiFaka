@@ -146,19 +146,19 @@ class ProdInfo(db.Model):
     def __count_card__(self, prod_name):
         count = Card.query.filter_by(prod_name=prod_name, isused=False).count()
         if count > 10:
-            return '充足'
+            return 'Ready'
         elif count == 0:
             if self.auto:
-                return '缺货'
+                return 'Limited'
             else:
-                return '充足'
+                return 'Ready'
         elif count == 1:
             # 再次统计
             if Card.query.filter_by(prod_name=prod_name, reuse=True).first():
-                return '充足'
-            return '少量'
+                return 'Enough'
+            return 'Low Stock'
         else:
-            return '少量'
+            return 'Low Stock'
 
     def __count_card_detail__(self, prod_name):
         count = Card.query.filter_by(prod_name=prod_name, isused=False).count()
@@ -231,22 +231,22 @@ class ProdInfo(db.Model):
 
 
 class Order(db.Model):
-    __tablename__ = 'order'  # 订单信息
+    __tablename__ = 'order'  # Order Detail
     __mapper_args__ = {
         'confirm_deleted_rows': False
     }
     id = Column(Integer, primary_key=True, autoincrement=True)
-    out_order_id = Column(String(50), nullable=False)  # 订单ID
-    name = Column(String(50), nullable=False)  # 商品名
-    payment = Column(String(50), nullable=False)  # 支付渠道
-    contact = Column(String(50))  # 联系方式
-    contact_txt = Column(Text, nullable=True)  # 附加信息
-    price = Column(Float, nullable=False)  # 价格
-    num = Column(Integer, nullable=False)  # 数量
-    total_price = Column(Float, nullable=False)  # 总价
-    card = Column(Text, nullable=True)  # 卡密
-    status = Column(Boolean, nullable=True, default=True)  # 订单状态
-    updatetime = Column(DateTime, nullable=False)  # 交易时间
+    out_order_id = Column(String(50), nullable=False)  # Order ID
+    name = Column(String(50), nullable=False)  # Product Name
+    payment = Column(String(50), nullable=False)  # Payment Channel
+    contact = Column(String(50))  # Contact
+    contact_txt = Column(Text, nullable=True)  # Additional Message
+    price = Column(Float, nullable=False)  # Price
+    num = Column(Integer, nullable=False)  # Quantity
+    total_price = Column(Float, nullable=False)  # Total Price
+    card = Column(Text, nullable=True)  # Product Key
+    status = Column(Boolean, nullable=True, default=True)  # Order Status
+    updatetime = Column(DateTime, nullable=False)  # Transaction Time
 
     def __init__(self, out_order_id, name, payment, contact, contact_txt, price, num, total_price, card, status, updatetime):
         self.out_order_id = out_order_id
@@ -336,19 +336,19 @@ class TempOrder(db.Model):
         'confirm_deleted_rows': False
     }
     id = Column(Integer, primary_key=True, autoincrement=True)
-    out_order_id = Column(String(50), nullable=False)  # 订单ID
-    name = Column(String(50), nullable=False)  # 商品名
-    payment = Column(String(50), nullable=False)  # 支付渠道
-    contact = Column(String(50))  # 联系方式
-    contact_txt = Column(Text, nullable=True)  # 附加信息
+    out_order_id = Column(String(50), nullable=False)  # Order ID
+    name = Column(String(50), nullable=False)  # Product Name
+    payment = Column(String(50), nullable=False)  # Payment Channel
+    contact = Column(String(50))  # Contact Info
+    contact_txt = Column(Text, nullable=True)  # Additional Infomation
     price = Column(Float, nullable=False)  # 价格--推算步骤
-    num = Column(Integer, nullable=False)  # 数量
-    total_price = Column(Float, nullable=False)  # 总价--推算步骤
-    status = Column(Boolean, nullable=True, default=True)  # 订单状态---False
-    auto = Column(Boolean, nullable=False, default=False)  # 手工或自动发货
+    num = Column(Integer, nullable=False)  # Quantity
+    total_price = Column(Float, nullable=False)  # Total Price--推算步骤
+    status = Column(Boolean, nullable=True, default=True)  # Order Status---False
+    auto = Column(Boolean, nullable=False, default=False)  # Manual Process
     updatetime = Column(DateTime, nullable=False,
-                        default=datetime.utcnow()+timedelta(hours=8))  # 创建时间
-    endtime = Column(DateTime, nullable=True)  # 最后时间
+                        default=datetime.utcnow()+timedelta(hours=8))  # Created Time
+    endtime = Column(DateTime, nullable=True)  # Last Updated
 
     def __init__(self, out_order_id, name, payment, contact, contact_txt, num, status, endtime):
         self.out_order_id = out_order_id
